@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link type="text/css" rel="stylesheet" href="//cdn.jsdelivr.net/npm/jsmind@0.8.1/style/jsmind.css"/>
+        <script type="text/javascript" src="//cdn.jsdelivr.net/npm/jsmind@0.8.1/es6/jsmind.js"></script>
+        <script type="text/javascript" src="//cdn.jsdelivr.net/npm/jsmind@0.8.1/es6/jsmind.draggable-node.js"></script>
+        <script type="text/javascript" src="//cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
+        <script type="text/javascript" src="js/jsmind.picture.js"></script>
+        
+        <script type="text/javascript" src="js/jsmind.menu.js"></script>
+
+        <script src="tinymce/tinymce.min.js"></script>
+        
+        <script type="text/javascript" src="js/jsmindPlugin.js"></script>
+    </head>
+    <body>
+        <div>TinyMCE editor</div>
+        <textarea  id="custom-plugin">
+            <img class="mindMap" src="mindMap.PNG" alt="Italian Trulli">
+        </textarea>
+
+        <div>jsmindcontainer</div>
+        <div id="jsmind_container" style="height:400px;border:1px solid black;"></div>
+        <button onclick="ToTinyMCE()">Presun do editoru</button>
+    </body>
+
+
+    <script type="text/javascript">
+        //init of tinyMCE
+        tinymce.init({
+        selector: 'textarea',
+        plugins: 'mindMap',
+        toolbar: 'mindMap undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | align lineheight | tinycomments | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        mergetags_list: [
+            { value: 'First.Name', title: 'First Name' },
+            { value: 'Email', title: 'Email' },
+        ],
+        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+        });
+
+        //initial data
+        mindData = {
+            "meta":{
+                "name":"example",
+            },
+            "format":"node_array",
+            "data":[
+                {"id":"root", "isroot":true, "topic":"jsMind"},
+    
+                {"id":"easy", "parentid":"root", "topic":"Easy", "direction":"left"},
+                {"id":"easy1", "parentid":"easy", "topic":"Easy to show"},
+                {"id":"easy2", "parentid":"easy", "topic":"Easy to edit"},
+            ]}
+
+        //init of jsMind
+        var mindMapSetup = {
+            "width": 400, 
+        };
+
+        var options = {
+            container: 'jsmind_container',
+            theme: 'orange',
+            editable: true,
+            menuOpts:{  
+                showMenu: true, 
+                injectionList: [
+                    {target:'edit',text: 'editovat'}, 
+                    {target:'addChild',text: 'přidat potomka'},
+                    {target:'addBrother',text: 'přidat souseda'},
+                    {target:'delete',text: 'smazat'},
+                    {target:'showAll',text: 'zobrazit vše'},
+                    {target:'hideAll',text: 'skrýt vše'},
+                ],
+            }
+        };
+        var jm = new jsMind(options);
+
+        //show mindMap according to mindData
+        function showMindMap(){
+            var mind = Object.assign({}, mindMapSetup, mindData);
+            jm.show(mind);
+        }
+            
+        //store mind data to mindData variable
+        function ToTinyMCE(){
+            mindData = jm.get_data('node_array');
+            //tady jsem se pokousel upravit jsmind.screeshot abych z toho dostal ten obrazek ktery bych pak mohl pouzit do toho tiny editoru
+            //ale zatim se mi napodarilo dotsat ani ten base64 a pak nejak nevim jak nahradit ten obrazek v tom editoru
+            //var jmss = new JmScreenshot(jm, options);
+            //document.getElementById('mindMap').src = jmss.get_picture();
+        }
+    </script>
+</html>
+

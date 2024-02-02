@@ -5,23 +5,23 @@
         <script type="text/javascript" src="//cdn.jsdelivr.net/npm/jsmind@0.8.1/es6/jsmind.js"></script>
         <script type="text/javascript" src="//cdn.jsdelivr.net/npm/jsmind@0.8.1/es6/jsmind.draggable-node.js"></script>
         <script type="text/javascript" src="//cdn.jsdelivr.net/npm/dom-to-image@2.6.0/dist/dom-to-image.min.js"></script>
-        <script type="text/javascript" src="js/jsmind.picture.js"></script>
         
         <script type="text/javascript" src="js/jsmind.menu.js"></script>
 
-        <script src="tinymce/tinymce.min.js"></script>
+        <script src="https://cdn.tiny.cloud/1/8o0ttv9nhlfk60h9im3hn1up0cnjx0grvrxth7ixc4v8m8ag/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
         
         <script type="text/javascript" src="js/jsmindPlugin.js"></script>
+
+        <script type="text/javascript" src="js/jsmind.picture.js"></script>
     </head>
     <body>
-        <div>TinyMCE editor</div>
-        <textarea  id="custom-plugin">
-            <img class="mindMap" src="mindMap.PNG" alt="Italian Trulli">
+        <textarea  id="tinyMCE">
+            <img src="mindMap.PNG" data-mindmap-key="GUID" style="height:300px;width:1000px;" />
         </textarea>
-
-        <div>jsmindcontainer</div>
-        <div id="jsmind_container" style="height:400px;border:1px solid black;"></div>
-        <button onclick="ToTinyMCE()">Presun do editoru</button>
+        <dialog id="jsmindDialog">
+            <div id="jsmind_container" style="height:300px;width:1000px;"></div>
+            <button onclick="ToTinyMCE()">Presun do editoru</button>
+        </dialog>
     </body>
 
 
@@ -56,13 +56,13 @@
 
         //init of jsMind
         var mindMapSetup = {
-            "width": 400, 
         };
 
         var options = {
             container: 'jsmind_container',
             theme: 'orange',
             editable: true,
+            //menu na jednotlivych nodech
             menuOpts:{  
                 showMenu: true, 
                 injectionList: [
@@ -79,17 +79,21 @@
 
         //show mindMap according to mindData
         function showMindMap(){
+            document.getElementById('jsmindDialog').showModal();
             var mind = Object.assign({}, mindMapSetup, mindData);
             jm.show(mind);
+            
         }
             
         //store mind data to mindData variable
         function ToTinyMCE(){
             mindData = jm.get_data('node_array');
-            //tady jsem se pokousel upravit jsmind.screeshot abych z toho dostal ten obrazek ktery bych pak mohl pouzit do toho tiny editoru
-            //ale zatim se mi napodarilo dotsat ani ten base64 a pak nejak nevim jak nahradit ten obrazek v tom editoru
-            //var jmss = new JmScreenshot(jm, options);
-            //document.getElementById('mindMap').src = jmss.get_picture();
+            var jmss = new JmScreenshot(jm, options);
+            jmss.get_picture(tinymce.get('tinyMCE').dom.doc.querySelector('[data-mindmap-key="GUID"]')).then(
+                () => {
+                    document.getElementById('jsmindDialog').close();
+            });
+            
         }
     </script>
 </html>

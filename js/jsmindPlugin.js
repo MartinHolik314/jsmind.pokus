@@ -11,7 +11,7 @@ tinymce.PluginManager.add('mindMap', function (editor, url) {
     
       editor.ui.registry.addContextToolbar('mindMap', {
         predicate: (accordion) =>
-          editor.dom.is(accordion, 'img.mindMap'),
+          editor.dom.is(accordion, 'img[data-mindmap-key="GUID"]'),
         items: 'editMindMap',
         scope: 'node',
         position: 'node'

@@ -19,13 +19,14 @@ class JmScreenshot {
         this.options = opts;
     }
 
-    get_picture() {
+    get_picture(el) {
         let c = this.create_canvas();
         let ctx = c.getContext('2d');
-        Promise.resolve(ctx)
+        return Promise.resolve(ctx)
             .then(() => this.draw_lines(ctx))
-            .then(() => this.draw_nodes(ctx));
-        return c.toDataURL();
+            .then(() => this.draw_nodes(ctx))
+            .then(() => el.src = c.toDataURL())
+            .then(() => this.clear(c));
     }
 
     create_canvas() {
@@ -70,29 +71,5 @@ class JmScreenshot {
             img.onerror = reject;
             img.src = url;
         });
-    }
-
-    download(c) {
-        var name = (this.options.filename || this.jm.mind.name) + '.png';
-
-        if (navigator.msSaveBlob && !!c.msToBlob) {
-            var blob = c.msToBlob();
-            navigator.msSaveBlob(blob, name);
-        } else {
-            var blob_url = c.toDataURL();
-            var anchor = $.c('a');
-            if ('download' in anchor) {
-                anchor.style.visibility = 'hidden';
-                anchor.href = blob_url;
-                anchor.download = name;
-                $.d.body.appendChild(anchor);
-                var evt = $.d.createEvent('MouseEvents');
-                evt.initEvent('click', true, true);
-                anchor.dispatchEvent(evt);
-                $.d.body.removeChild(anchor);
-            } else {
-                location.href = blob_url;
-            }
-        }
     }
 }
